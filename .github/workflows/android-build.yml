@@ -1,55 +1,22 @@
-name: Build Sonic Mania APK with DLC Unlocked
-
-on:
-  workflow_dispatch:
-
+name: Build APK
+on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: write-all
-
     steps:
-    - name: Checkout RSDKv5
-      uses: actions/checkout@v4
-      with:
-        repository: Playerxd2095/RSDKv5-Decompilation
-        path: RSDKv5
-
-    - name: Checkout Sonic Mania Data
-      uses: actions/checkout@v4
-      with:
-        repository: Playerxd2095/Sonic-Mania-Decompilation
-        path: Sonic-Mania
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - name: Install build dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake make build-essential
-
-    - name: Build with DLC ENABLED for Android
-      run: |
-        cd RSDKv5
-        mkdir -p build
-        cd build
-        cmake .. \
-          -DRETRO_DISABLE_PLUS=off \
-          -DRETRO_REVISION=3 \
-          -DBUILD_ANDROID=ON \
-          -DANDROID_ABI=arm64-v8a \
-          -DANDROID_PLATFORM=android-24
-        make -j$(nproc)
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: SonicMania-DLC-Unlocked
-        path: RSDKv5/build/*.apk
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: Rubberduckycooly/RSDKv5-Decompilation
+          path: RSDKv5
+      - name: Checkout Data
+        uses: actions/checkout@v4
+        with:
+          repository: Rubberduckycooly/Sonic-Mania-Decompilation
+          path: Sonic-Mania
+      - name: Build APK
+        run: |
+          cd RSDKv5
+          mkdir build && cd build
+          cmake .. -DRETRO_DISABLE_PLUS=off -DRETRO_REVISION=3
+          make
