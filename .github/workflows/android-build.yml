@@ -1,0 +1,45 @@
+name: Build Sonic Mania APK with DLC Unlocked
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+    - name: Checkout RSDKv5
+      uses: actions/checkout@v4
+      with:
+        repository: Playerxd2095/RSDKv5-Decompilation
+        path: RSDKv5
+
+    - name: Checkout Sonic Mania Data
+      uses: actions/checkout@v4
+      with:
+        repository: Playerxd2095/Sonic-Mania-Decompilation
+        path: Sonic-Mania
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Build with DLC ENABLED
+      run: |
+        cd RSDKv5
+        mkdir -p build
+        cd build
+        cmake .. -DRETRO_DISABLE_PLUS=off -DRETRO_REVISION=3 -DBUILD_ANDROID=ON
+        make -j$(nproc)
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: SonicMania-DLC-Unlocked
+        path: RSDKv5/build/*.apk
